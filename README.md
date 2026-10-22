@@ -1,2 +1,3 @@
 # Perumal-Kovil-Koratti-
-Koratti Perumal Kovil online Booking system 
+ஶ்ரீ பிரசன்ன வெங்கடரமண பெருமாள் திருக்கோவில், கொரட்டி
+ஆன்லைன் முன்பதிவு
