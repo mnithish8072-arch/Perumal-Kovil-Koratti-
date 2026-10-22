@@ -161,7 +161,26 @@ async function postAnn(){
  try{localStorage.setItem(AK,JSON.stringify(a))}catch(e){$('am').textContent='இடம் போதவில்லை. பழையவற்றை நீக்கவும்';return}
  $('at').value='';clrF();$('am').style.color='green';$('am').textContent='வெளியிடப்பட்டது ✔ (பக்தர்களுக்கு அறிவிப்பு செல்லும்)';renderA();
 }
-function delAnn(id){if(!confirm('இதை நீக்கவா?'))return;localStorage.setItem(AK,JSON.stringify(loadA().filter(x=>x.id!==id)));renderA()}
+async function delAnn(id) {
+  if (!confirm('இந்த அறிவிப்பை நிரந்தரமாக நீக்கவா?')) return;
+
+  try {
+    const remaining = loadA().filter(x => String(x.id) !== String(id));
+
+    localStorage.setItem(AK, JSON.stringify(remaining));
+
+    if (window.deleteAnnouncementFromCloud) {
+      await window.deleteAnnouncementFromCloud(id);
+    }
+
+    renderA();
+
+    alert('அறிவிப்பு நீக்கப்பட்டது');
+  } catch (error) {
+    console.error('Delete failed:', error);
+    alert('நீக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.');
+  }
+}
 function renderA(){
  const a=loadA().slice().reverse();
  $('alist').innerHTML=a.length?a.map(x=>`<div class="an"><small>${esc(x.at)}</small>${x.text?`<p>${esc(x.text)}</p>`:''}${x.img?`<img src="${x.img}">`:''}<button onclick="delAnn('${x.id}')">🗑 நீக்கு</button></div>`).join(''):'<p>அறிவிப்புகள் இல்லை</p>';
@@ -185,6 +204,11 @@ if(sessionStorage.getItem(SES))open_();
 };
  if(!firebase.apps.length) firebase.initializeApp(cfg);
  const auth=firebase.auth(), db=firebase.firestore();
+ window.deleteAnnouncementFromCloud = async function(id) {
+  await db.collection('announcements')
+    .doc(String(id).replaceAll('/', '_'))
+    .delete();
+};
  const ADMIN_EMAIL='perumalkovilkoratti@gmail.com';
  const BK='abhishekam_bookings', AK='temple_announcements';
  const origSet=Storage.prototype.setItem;
