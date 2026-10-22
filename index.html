@@ -1,10 +1,1 @@
-db.collection('announcements').onSnapshot(s => {
-const cloud = s.docs.map(d => d.data());
 
-// Firebase is the source of truth
-setLocal(AK, cloud);
-
-if (typeof window.renderA === 'function') {
-window.renderA();
-}
-}, e => console.warn('Announcement listener', e));
